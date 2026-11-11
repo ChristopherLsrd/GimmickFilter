@@ -24,6 +24,7 @@ const PAGE_SCRIPT = `(function () { try {
     if (next && query) { next.value = query; filter(root, query); }
   }
   function filter(root, query) {
+    if (!live()) return;
     var q = String(query || '').trim().toLowerCase();
     root.querySelectorAll('tr[data-gf-search]').forEach(function (tr) {
       tr.classList.toggle('gf-filtered', q !== '' && tr.getAttribute('data-gf-search').indexOf(q) < 0);
@@ -37,7 +38,7 @@ const PAGE_SCRIPT = `(function () { try {
   page = {
     init: function () {
       var root = document.getElementById('gf-page-root');
-      if (!root) return;
+      if (!root || !live()) return;
       root.innerHTML = '<div class="loading"></div>';
       plugins.invoke(PLUGIN, 'page-load', locale()).then(function (html) { render(root, html); })
         .catch(function (e) { console.error('[gimmick-filter] page', e); });

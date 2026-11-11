@@ -72,3 +72,50 @@ test('stop et reinject', () => {
   page.reinject();
   assert.deepEqual(scripts, [STOP_SCRIPT, PAGE_SCRIPT]);
 });
+
+// Comportement réel : le script tourne dans un contexte vm avec des faux DOM et plugins.
+function runPageScript() {
+  const vm = require('node:vm');
+  const rows = [{ attrs: { 'data-gf-search': 'cocky' }, classes: new Set() }];
+  const root = {
+    innerHTML: '',
+    querySelector() { return null; },
+    querySelectorAll(sel) {
+      return sel === 'tr[data-gf-search]'
+        ? rows.map((r) => ({
+          getAttribute: (n) => r.attrs[n],
+          classList: { toggle: (c, on) => { if (on) r.classes.add(c); else r.classes.delete(c); } },
+        }))
+        : [];
+    },
+  };
+  const pending = [];
+  const context = {
+    console,
+    I18n: { locale: 'fr' },
+    document: { getElementById: (id) => (id === 'gf-page-root' ? root : null) },
+    window: {},
+    plugins: { invoke() { return new Promise((resolve) => pending.push(resolve)); } },
+  };
+  vm.createContext(context);
+  vm.runInContext(PAGE_SCRIPT, context);
+  return { context, root, rows, pending, vm };
+}
+
+test('une réponse arrivée après l\'arrêt n\'écrit pas dans le DOM', async () => {
+  const { context, root, pending, vm } = runPageScript();
+  context.window.GimmickFilterPage.init();
+  vm.runInContext(STOP_SCRIPT, context);
+  const before = root.innerHTML;
+  pending[0]('<p>tardif</p>');
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(root.innerHTML, before);
+});
+
+test('après l\'arrêt, la recherche ne modifie plus les lignes', () => {
+  const { context, root, rows, vm } = runPageScript();
+  context.window.GimmickFilterPage.init();
+  vm.runInContext(STOP_SCRIPT, context);
+  root.oninput({ target: { classList: { contains: () => true }, value: 'zzz' } });
+  assert.equal(rows[0].classes.has('gf-filtered'), false);
+});
