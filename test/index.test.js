@@ -2,10 +2,11 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const plugin = require('../index');
+const { STOP_SCRIPT } = require('../src/adapters/gimmickListWatcher');
 
 function fakeApi() {
   const api = {
-    scripts: [], handlers: {}, listeners: {}, pages: [], css: [], removed: 0,
+    scripts: [], handlers: {}, listeners: {}, pages: [], css: [],
     console: { log() {}, error() {} },
     database: { query: () => [] },
     storage: { readFile: () => null, writeFile() {}, writeJSON() {} },
@@ -18,8 +19,7 @@ function fakeApi() {
       executeJS(js) { api.scripts.push(js); return Promise.resolve(); },
       addPage(p) { api.pages.push(p); },
       addSideMenuItem() {},
-      widgets: { removeAll() { api.removed += 1; } },
-    },
+          },
   };
   return api;
 }
@@ -51,13 +51,21 @@ test('onRendererLoad réinjecte les deux scripts', () => {
   plugin.deactivate();
 });
 
-test('deactivate arrête les scripts et nettoie', () => {
+test('deactivate arrête les scripts sans balayage DOM ni widgets', () => {
   const api = fakeApi();
   plugin.activate(api);
   api.scripts.length = 0;
   plugin.deactivate();
-  assert.equal(api.removed, 1);
   assert.ok(api.scripts.some((s) => /__gimmickFilter/.test(s)));
   assert.ok(api.scripts.some((s) => /GimmickFilterPage/.test(s)));
-  assert.ok(api.scripts.some((s) => /data-plugin-id="gimmick-filter"/.test(s)));
+  assert.ok(!api.scripts.some((s) => /data-plugin-id="gimmick-filter"/.test(s)));
+});
+
+test('si ui.addPage lève pendant activate, deactivate arrête quand même la surveillance', () => {
+  const api = fakeApi();
+  api.ui.addPage = () => { throw new Error('addPage KO'); };
+  assert.throws(() => plugin.activate(api), /addPage KO/);
+  api.scripts.length = 0;
+  plugin.deactivate();
+  assert.ok(api.scripts.some((s) => s === STOP_SCRIPT));
 });

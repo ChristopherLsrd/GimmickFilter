@@ -44,23 +44,20 @@ module.exports = {
     const page = createSettingsPage({
       ui: api.ui, ipc: api.ipc, controller: createSettingsPageController({ catalog, repository, logger }), logger,
     });
-    watcher.start();
-    page.start();
-
+    // Affectés avant le démarrage : si page.start() lève, deactivate peut quand même arrêter la surveillance.
     reinject = () => {
       watcher.reinject();
       page.reinject();
     };
 
+    // Le jeu retire lui-même le DOM portant notre data-plugin-id ; watcher.stop() restaure les listes.
     teardown = () => {
-      watcher.stop();
-      page.stop();
-      try { api.ui.widgets.removeAll(); } catch (e) { logger.error('widgets.removeAll', e); }
-      Promise.resolve(api.ui.executeJS(
-        "(function () { try { document.querySelectorAll('[data-plugin-id=\"gimmick-filter\"]')"
-        + '.forEach(function (el) { el.remove(); }); } catch (e) {} })();',
-      )).catch((e) => logger.error('nettoyage', e));
+      try { watcher.stop(); } catch (e) { logger.error('watcher.stop', e); }
+      try { page.stop(); } catch (e) { logger.error('page.stop', e); }
     };
+
+    watcher.start();
+    page.start();
 
     logger.log('Gimmick Filter activé.');
   },
