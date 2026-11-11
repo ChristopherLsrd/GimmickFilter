@@ -159,6 +159,9 @@ const WATCH_SCRIPT = `(function () { try {
     if (!inOrder) sorted.forEach(function (li) { ul.appendChild(li); });
     indexed.forEach(function (li) { li.removeAttribute('data-gf-index'); });
   }
+  function safeRestore(ctx) {
+    try { restore(ctx); } catch (e) { console.error('[gimmick-filter] restauration', e); }
+  }
   function request(ctx, ul, channel, action) {
     var sent = snapshot(ul);
     var isOpen = channel === 'list-open';
@@ -174,10 +177,11 @@ const WATCH_SCRIPT = `(function () { try {
       try {
         apply(ctx, ul, vm);
         done(!vm);
-      } catch (e) { console.error('[gimmick-filter] application', e); done(true); }
+      } catch (e) { console.error('[gimmick-filter] application', e); safeRestore(ctx); done(true); }
     }).catch(function (e) {
       if (stopped) return;
       console.error('[gimmick-filter] ' + channel, e);
+      safeRestore(ctx);
       done(true);
     });
   }

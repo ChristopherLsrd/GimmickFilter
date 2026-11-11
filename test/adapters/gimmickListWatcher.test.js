@@ -112,3 +112,10 @@ test('le script se protège des boucles, courses et réponses tardives', () => {
   assert.match(WATCH_SCRIPT, /u2298/);
   assert.doesNotThrow(() => new Function(WATCH_SCRIPT));
 });
+
+test("WATCH_SCRIPT rend la liste native après une erreur d'invocation ou d'application", () => {
+  assert.equal(WATCH_SCRIPT.split('safeRestore(ctx);').length - 1, 2);
+  assert.match(WATCH_SCRIPT, /application', e\); safeRestore\(ctx\); done\(true\)/);
+  assert.match(WATCH_SCRIPT, /channel, e\);\s*safeRestore\(ctx\);\s*done\(true\);/);
+  assert.doesNotThrow(() => new Function(WATCH_SCRIPT));
+});
