@@ -35,3 +35,16 @@ test('tCount choisit le singulier ou le pluriel', () => {
   assert.equal(tCount('fr', 'count.shown', 0), '0 gimmick');
   assert.equal(tCount('fr', 'count.shown', 12), '12 gimmicks');
 });
+
+test('chaque langue bonus a exactement les clés de l\'anglais', () => {
+  for (const lang of ['de', 'es', 'it', 'pt']) {
+    assert.deepEqual(Object.keys(MESSAGES[lang]).sort(), Object.keys(MESSAGES.en).sort(), lang);
+  }
+});
+
+test('les langues bonus sont utilisées', () => {
+  assert.equal(t('de', 'panel.reset'), 'Zurücksetzen');
+  assert.equal(t('es-MX', 'panel.reset'), 'Restablecer');
+  assert.equal(t('it', 'toast.undo'), 'Annulla');
+  assert.equal(tCount('pt', 'count.shown', 0), '0 gimmick');
+});
