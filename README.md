@@ -21,6 +21,8 @@ La gimmick actuellement sélectionnée reste toujours visible, avec un marqueur.
 
 Clean architecture sans dépendance externe : `src/domain` (règles pures), `src/application` (cas d'usage et ports), `src/presentation` (rendu HTML et textes), `src/adapters` (jeu, base, stockage). `test/architecture.test.js` vérifie la règle de dépendance.
 
+Logo pour le Steam Workshop : [assets/gimmick-filter-logo.png](assets/gimmick-filter-logo.png) (source SVG dans le même dossier).
+
 Tests (Node 24) :
 
 ```powershell
