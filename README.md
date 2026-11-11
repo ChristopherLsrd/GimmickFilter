@@ -6,7 +6,7 @@ Le plugin est en lecture seule : il n'écrit jamais dans la base de la sauvegard
 
 ## Fonctions
 
-- **Disposition** : Toutes / Heel / Face / Tweener (gimmicks sans préférence).
+- **Disposition** : Toutes / Heel / Face / None (gimmicks sans préférence).
 - **Correspondance** : Toutes / ✓ Correspondantes (aucune exigence en rouge pour le catcheur) / ✗ Non pertinentes (au moins une exigence en rouge).
 - **Avec effets** : la gimmick doit avoir tous les effets cochés.
 - **Masquer effets** : la gimmick ne doit avoir aucun des effets cochés. Un effet ne peut pas être coché dans les deux groupes.

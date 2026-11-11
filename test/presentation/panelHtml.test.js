@@ -39,7 +39,7 @@ test('un effet inclus est actif d\'un côté et désactivé de l\'autre', () => 
 
 test('disposition et correspondance : la valeur courante est active', () => {
   const html = renderPanel(base({ criteria: { ...defaultCriteria(), disposition: 'None', match: 'nomatch' } }));
-  assert.match(html, /class="gf-seg-btn gf-on" data-gf-action="setDisposition" data-gf-arg="None" aria-pressed="true">Tweener</);
+  assert.match(html, /class="gf-seg-btn gf-on" data-gf-action="setDisposition" data-gf-arg="None" aria-pressed="true">None</);
   assert.match(html, /class="gf-seg-btn gf-on" data-gf-action="setMatch" data-gf-arg="nomatch" aria-pressed="true">✗ Non pertinentes</);
   assert.match(html, /class="gf-seg-btn" data-gf-action="setDisposition" data-gf-arg="all">Toutes</);
 });

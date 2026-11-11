@@ -19,7 +19,7 @@ test('la coquille de page a une racine identifiable', () => {
 test('une ligne par gimmick avec ses cases cochées', () => {
   const html = renderSettingsPage(DATA, 'fr');
   assert.match(html, /<tr data-gf-search="cocky talking angle boost, fast popularity gain">/);
-  assert.match(html, /<td>Tweener<\/td>/);
+  assert.match(html, /<td>None<\/td>/);
   assert.match(html, /<input type="checkbox" data-gf-action="setPinned" data-gf-name="Cocky" checked>/);
   assert.match(html, /<input type="checkbox" data-gf-action="setHidden" data-gf-name="Cocky">/);
   assert.match(html, /<input type="checkbox" data-gf-action="setHidden" data-gf-name="Lovable &lt;Loser&gt;" checked>/);
