@@ -37,6 +37,7 @@ function barRow(panel, locale, n) {
     + label(locale, 'panel.preset')
     + `<select class="gf-select" data-gf-change="applyPreset">${options.join('')}</select>`
     + `<button type="button" class="gf-btn gf-toggle button clickable secondaryButton" data-gf-toggle aria-expanded="false">${escapeHtml(toggleLabel)}</button>`
+    + button({ action: 'reset', label: t(locale, 'panel.reset') })
     + countLine(panel.counts, locale)
     + '</div>';
 }
@@ -45,7 +46,6 @@ function actionsRow(panel, locale) {
   return '<div class="gf-row gf-presets">'
     + button({ action: 'openSave', label: t(locale, 'panel.save') })
     + button({ action: 'deletePreset', label: t(locale, 'panel.delete'), disabled: !panel.activePreset })
-    + button({ action: 'reset', label: t(locale, 'panel.reset') })
     + '</div>';
 }
 

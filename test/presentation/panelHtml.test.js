@@ -181,3 +181,11 @@ test('pas de bouton voir plus avec 5 effets ou moins', () => {
   assert.doesNotMatch(row, /data-gf-more/);
   assert.doesNotMatch(row, /gf-extra/);
 });
+
+test('le bouton Réinitialiser est dans la barre, juste après le bouton Filtres', () => {
+  const html = renderPanel(base());
+  const bar = html.slice(html.indexOf('gf-bar'), html.indexOf('gf-body'));
+  assert.match(bar, /data-gf-toggle[^>]*>[^<]*<\/button><button[^>]*data-gf-action="reset"/);
+  const body = html.slice(html.indexOf('gf-body'));
+  assert.doesNotMatch(body.slice(0, body.indexOf('gf-chips')), /data-gf-action="reset"/);
+});
