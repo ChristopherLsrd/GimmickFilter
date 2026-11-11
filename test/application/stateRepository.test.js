@@ -49,3 +49,10 @@ test('save écrit l\'état et signale un échec sans lever d\'erreur', () => {
   assert.equal(repo.save('wow_20251201', emptyState()), false);
   assert.equal(logger.errors.length, 1);
 });
+
+test('si le fichier est illisible et la mise de côté échoue, load renvoie null', () => {
+  const { repo, store, logger } = setup({ wow_20251201: new Error('E/S') });
+  store.quarantine = () => { throw new Error('quarantaine impossible'); };
+  assert.equal(repo.load(), null);
+  assert.equal(logger.errors.length, 2);
+});

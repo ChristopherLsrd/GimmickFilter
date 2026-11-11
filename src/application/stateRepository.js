@@ -17,7 +17,13 @@ function createStateRepository({ saveIdentity, store, logger }) {
       normalized = { state: emptyState(), ok: false };
     }
     if (!normalized.ok) {
-      try { store.quarantine(key); } catch (e) { logger.error('stateRepository.quarantine', e); }
+      try {
+        store.quarantine(key);
+      } catch (e) {
+        // Préférences illisibles et impossibles à mettre de côté : ne rien écraser.
+        logger.error('stateRepository.quarantine', e);
+        return null;
+      }
     }
     return { key, state: normalized.state };
   }

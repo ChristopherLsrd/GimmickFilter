@@ -78,3 +78,17 @@ test('une action inconnue est journalisée sans enregistrement', () => {
   assert.equal(repository.saves, 0);
   assert.equal(logger.errors.length, 1);
 });
+
+test('préférences illisibles non sauvegardables : rien n\'est sauvegardé', () => {
+  const { createStateRepository } = require('../../src/application/stateRepository');
+  const { createMemoryStore, createFakeSaveIdentity } = require('../fakes');
+  const store = createMemoryStore({ save_20260101: new Error('E/S') });
+  store.quarantine = () => { throw new Error('quarantaine impossible'); };
+  let saves = 0;
+  store.save = () => { saves += 1; };
+  const repository = createStateRepository({ saveIdentity: createFakeSaveIdentity(), store, logger: createFakeLogger() });
+  const controller = createSettingsPageController({ catalog: createFakeCatalog(ROWS), repository, logger: createFakeLogger() });
+  assert.equal(controller.act({ type: 'setPinned', arg: { name: 'Cocky', on: true } }), null);
+  assert.equal(controller.load(), null);
+  assert.equal(saves, 0);
+});

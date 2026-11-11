@@ -147,3 +147,18 @@ test('la sélection envoyée par le script est forcée visible', () => {
   const result = controller.open(payload(undefined, { selected: 'Cocky' }));
   assert.deepEqual(result.list.forced, ['Cocky']);
 });
+
+test('préférences illisibles non sauvegardables : rien n\'est sauvegardé', () => {
+  const { createStateRepository } = require('../../src/application/stateRepository');
+  const { createMemoryStore, createFakeSaveIdentity } = require('../fakes');
+  const store = createMemoryStore({ save_20260101: new Error('E/S') });
+  store.quarantine = () => { throw new Error('quarantaine impossible'); };
+  let saves = 0;
+  store.save = () => { saves += 1; };
+  const logger = createFakeLogger();
+  const repository = createStateRepository({ saveIdentity: createFakeSaveIdentity(), store, logger });
+  const controller = createGimmickListController({ catalog: createFakeCatalog(ROWS), repository, logger });
+  assert.equal(controller.act(payload({ type: 'pin', arg: 'Cocky' })), null);
+  assert.equal(controller.open(payload()), null);
+  assert.equal(saves, 0);
+});
