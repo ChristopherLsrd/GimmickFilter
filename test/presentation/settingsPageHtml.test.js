@@ -54,3 +54,10 @@ test('sans gimmick, un message l\'indique', () => {
 test('renderNoSave', () => {
   assert.equal(renderNoSave('fr'), '<div class="noResults">Charge une sauvegarde pour paramétrer Gimmick Filter.</div>');
 });
+
+test('les boutons de la page utilisent les classes natives du jeu', () => {
+  const { renderSettingsPage } = require('../../src/presentation/settingsPageHtml');
+  const html = renderSettingsPage({ gimmicks: [], presets: ['P'], error: null }, 'fr');
+  assert.match(html, /class="gf-btn button clickable secondaryButton" data-gf-action="unpinAll"/);
+  assert.match(html, /class="gf-btn button clickable secondaryButton" data-gf-action="renamePreset"/);
+});

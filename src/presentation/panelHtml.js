@@ -6,7 +6,9 @@ const { DISPOSITIONS, MATCH_MODES } = require('../domain/filterCriteria');
 const PLUGIN_ID = 'gimmick-filter';
 
 function button({ action, arg, label, cls = 'gf-btn', on = false, disabled = false, input }) {
-  const attrs = ['type="button"', `class="${cls}${on ? ' gf-on' : ''}"`, `data-gf-action="${escapeHtml(action)}"`];
+  // Les boutons d'action prennent le style natif du jeu (guide UI : classes button/clickable).
+  const native = cls === 'gf-btn' ? (disabled ? ' button disabled' : ' button clickable secondaryButton') : '';
+  const attrs = ['type="button"', `class="${cls}${native}${on ? ' gf-on' : ''}"`, `data-gf-action="${escapeHtml(action)}"`];
   if (arg !== undefined && arg !== null) attrs.push(`data-gf-arg="${escapeHtml(arg)}"`);
   if (input) attrs.push(`data-gf-input="${escapeHtml(input)}"`);
   if (on) attrs.push('aria-pressed="true"');

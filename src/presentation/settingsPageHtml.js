@@ -32,8 +32,8 @@ function presetsSection(data, locale) {
     ? `<p class="gf-muted">${escapeHtml(t(locale, 'page.presetsEmpty'))}</p>`
     : `<ul class="gf-preset-list">${data.presets.map((name) => '<li>'
       + `<input type="text" class="gf-rename-input" value="${escapeHtml(name)}" maxlength="60">`
-      + `<button type="button" class="gf-btn" data-gf-action="renamePreset" data-gf-from="${escapeHtml(name)}">${escapeHtml(t(locale, 'page.rename'))}</button>`
-      + `<button type="button" class="gf-btn" data-gf-action="deletePreset" data-gf-from="${escapeHtml(name)}">${escapeHtml(t(locale, 'page.delete'))}</button>`
+      + `<button type="button" class="gf-btn button clickable secondaryButton" data-gf-action="renamePreset" data-gf-from="${escapeHtml(name)}">${escapeHtml(t(locale, 'page.rename'))}</button>`
+      + `<button type="button" class="gf-btn button clickable secondaryButton" data-gf-action="deletePreset" data-gf-from="${escapeHtml(name)}">${escapeHtml(t(locale, 'page.delete'))}</button>`
       + '</li>').join('')}</ul>`;
   return `<section class="panel gf-page-presets"><h3>${escapeHtml(t(locale, 'page.presets'))}</h3>${error}${body}</section>`;
 }
@@ -48,8 +48,8 @@ function gimmicksSection(data, locale) {
   return `<section class="panel gf-page-gimmicks"><h3>${escapeHtml(t(locale, 'page.gimmicks'))}</h3>`
     + '<div class="gf-row">'
     + `<input type="search" class="gf-page-search" placeholder="${escapeHtml(t(locale, 'page.search'))}">`
-    + `<button type="button" class="gf-btn" data-gf-action="unpinAll">${escapeHtml(t(locale, 'page.unpinAll'))}</button>`
-    + `<button type="button" class="gf-btn" data-gf-action="unhideAll">${escapeHtml(t(locale, 'page.unhideAll'))}</button>`
+    + `<button type="button" class="gf-btn button clickable secondaryButton" data-gf-action="unpinAll">${escapeHtml(t(locale, 'page.unpinAll'))}</button>`
+    + `<button type="button" class="gf-btn button clickable secondaryButton" data-gf-action="unhideAll">${escapeHtml(t(locale, 'page.unhideAll'))}</button>`
     + `</div>${body}</section>`;
 }
 

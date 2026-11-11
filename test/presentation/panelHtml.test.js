@@ -104,3 +104,9 @@ test('cardLabels', () => {
     pin: 'Épingler', unpin: 'Désépingler', hide: 'Masquer cette gimmick', forced: 'Affichée car sélectionnée',
   });
 });
+
+test('les boutons d\'action utilisent les classes natives du jeu', () => {
+  const html = renderPanel(base());
+  assert.match(html, /class="gf-btn button clickable secondaryButton"[^>]*data-gf-action="reset"/);
+  assert.match(html, /class="gf-btn button disabled"[^>]*data-gf-action="deletePreset" disabled/);
+});

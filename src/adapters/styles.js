@@ -5,7 +5,7 @@ const CSS = `
 .gf-panel { background: var(--modal-panel, var(--background-2)); border: var(--panel-border); border-radius: var(--panel-radius); padding: 8px 10px; margin: 0 0 8px; display: flex; flex-direction: column; gap: 6px; color: var(--modal-text, var(--color-0)); }
 .gf-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .gf-label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-2); min-width: 110px; }
-.gf-btn { margin: 0; }
+.gf-btn { margin: 0; width: auto; }
 .gf-select { margin: 0; min-width: 160px; }
 .gf-preset-name { margin: 0; min-width: 200px; }
 .gf-seg { display: inline-flex; border: var(--panel-border); border-radius: var(--button-radius); overflow: hidden; margin-right: 12px; }
@@ -25,8 +25,8 @@ const CSS = `
 .gimmickSelect > li.gf-forced::after { content: attr(data-gf-forced); display: block; font-size: 10px; color: var(--color-2); }
 .gf-card-actions { position: absolute; top: 4px; right: 6px; display: flex; gap: 4px; z-index: 1; }
 .gf-card-actions button { background: transparent; border: 0; margin: 0; padding: 0 3px; cursor: pointer; color: var(--color-2); font-size: 15px; line-height: 1; }
-.gf-card-actions .gf-pin.gf-on { color: var(--color-1); }
-.gf-separator { border-top: 2px solid var(--color-1); margin: 8px 0; }
+.gf-card-actions .gf-pin.gf-on { color: var(--button); }
+.gf-separator { border-top: 2px solid var(--button); margin: 8px 0; list-style: none; }
 .gf-toast { display: flex; align-items: center; gap: 8px; padding: 6px 10px; margin: 0 0 8px; background: var(--background-3); border-radius: var(--panel-radius); }
 .gf-page-inner { display: flex; flex-direction: column; gap: 12px; padding: 12px; }
 .gf-preset-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
