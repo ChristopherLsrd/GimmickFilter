@@ -42,6 +42,15 @@ test('chaque langue bonus a exactement les clés de l\'anglais', () => {
   }
 });
 
+test('chaque langue a les mêmes marqueurs {nom} que l\'anglais', () => {
+  const tokens = (text) => new Set(text.match(/\{\w+\}/g) || []);
+  for (const lang of Object.keys(MESSAGES).filter((code) => code !== 'en')) {
+    for (const key of Object.keys(MESSAGES.en)) {
+      assert.deepEqual([...tokens(MESSAGES[lang][key])].sort(), [...tokens(MESSAGES.en[key])].sort(), `${lang} ${key}`);
+    }
+  }
+});
+
 test('les langues bonus sont utilisées', () => {
   assert.equal(t('de', 'panel.reset'), 'Zurücksetzen');
   assert.equal(t('es-MX', 'panel.reset'), 'Restablecer');
