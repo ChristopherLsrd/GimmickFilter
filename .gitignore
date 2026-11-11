@@ -1,0 +1,9 @@
+# Données runtime créées par api.storage
+data/
+# Specs et plans : restent locaux
+docs/
+# Fichiers de brainstorming et d'exécution superpowers
+.superpowers/
+node_modules/
+.DS_Store
+Thumbs.db
