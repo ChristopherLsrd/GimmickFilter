@@ -16,6 +16,9 @@ const WATCH_SCRIPT = `(function () { try {
   var pending = null;
   var toastTimer = null;
   var warned = false;
+  var stopped = false;
+  var inactive = {};
+  var inflight = {};
 
   function locale() {
     try { return (typeof I18n !== 'undefined' && I18n && I18n.locale) ? String(I18n.locale) : null; } catch (e) { return null; }
@@ -43,8 +46,7 @@ const WATCH_SCRIPT = `(function () { try {
   function ensureIndex(ul) {
     cards(ul).forEach(function (li, i) { if (!li.hasAttribute('data-gf-index')) li.setAttribute('data-gf-index', String(i)); });
   }
-  function payload(ctx, ul, action) {
-    var s = snapshot(ul);
+  function payload(ctx, s, action) {
     var p = { context: ctx.id, requirements: s.requirements, selected: s.selected, locale: locale() };
     if (action) p.action = action;
     return p;
@@ -90,14 +92,22 @@ const WATCH_SCRIPT = `(function () { try {
     var modal = document.querySelector(ctx.modal);
     var anchor = document.querySelector(ctx.anchor);
     if (!modal || !anchor) return;
-    var focused = document.activeElement && document.activeElement.classList.contains('gf-preset-name');
     var wrap = document.createElement('div');
     wrap.innerHTML = vm.panelHtml;
     var panel = wrap.firstElementChild;
     var old = modal.querySelector('.gf-panel');
+    var oldInput = old ? old.querySelector('.gf-preset-name') : null;
+    var kept = null;
+    if (oldInput) kept = { value: oldInput.value, start: oldInput.selectionStart, end: oldInput.selectionEnd, focused: document.activeElement === oldInput };
     if (old) old.replaceWith(panel); else anchor.parentNode.insertBefore(panel, anchor);
     var input = panel.querySelector('.gf-preset-name');
-    if (input && (focused || panel.querySelector('.gf-save'))) { input.focus(); input.select(); }
+    if (input) {
+      if (kept) {
+        input.value = kept.value;
+        try { input.setSelectionRange(kept.start, kept.end); } catch (e) {}
+        if (kept.focused) input.focus();
+      } else { input.focus(); input.select(); }
+    }
 
     var byName = {};
     cards(ul).forEach(function (li) { byName[cardName(li)] = li; });
@@ -139,20 +149,37 @@ const WATCH_SCRIPT = `(function () { try {
     ul.querySelectorAll('.gf-separator, .gf-card-actions').forEach(function (el) { el.remove(); });
     var list = cards(ul);
     list.forEach(function (li) {
-      li.classList.remove('gf-hidden', 'gf-forced');
-      li.removeAttribute('data-gf-forced');
+      if (li.classList.contains('gf-hidden')) li.classList.remove('gf-hidden');
+      if (li.classList.contains('gf-forced')) li.classList.remove('gf-forced');
+      if (li.hasAttribute('data-gf-forced')) li.removeAttribute('data-gf-forced');
     });
-    list.filter(function (li) { return li.hasAttribute('data-gf-index'); })
-      .sort(function (a, b) { return Number(a.getAttribute('data-gf-index')) - Number(b.getAttribute('data-gf-index')); })
-      .forEach(function (li) { ul.appendChild(li); li.removeAttribute('data-gf-index'); });
+    var indexed = list.filter(function (li) { return li.hasAttribute('data-gf-index'); });
+    var sorted = indexed.slice().sort(function (a, b) { return Number(a.getAttribute('data-gf-index')) - Number(b.getAttribute('data-gf-index')); });
+    var inOrder = indexed.every(function (li, i) { return li === sorted[i]; });
+    if (!inOrder) sorted.forEach(function (li) { ul.appendChild(li); });
+    indexed.forEach(function (li) { li.removeAttribute('data-gf-index'); });
   }
   function request(ctx, ul, channel, action) {
-    plugins.invoke(PLUGIN, channel, payload(ctx, ul, action)).then(function (vm) {
+    var sent = snapshot(ul);
+    var isOpen = channel === 'list-open';
+    if (isOpen) inflight[ctx.id] = true;
+    function done(isInactive) {
+      if (isOpen) inflight[ctx.id] = false;
+      inactive[ctx.id] = isInactive;
+      lastSignature[ctx.id] = signature(sent);
+      schedule();
+    }
+    plugins.invoke(PLUGIN, channel, payload(ctx, sent, action)).then(function (vm) {
+      if (stopped) return;
       try {
         apply(ctx, ul, vm);
-        lastSignature[ctx.id] = signature(snapshot(ul));
-      } catch (e) { console.error('[gimmick-filter] application', e); }
-    }).catch(function (e) { console.error('[gimmick-filter] ' + channel, e); });
+        done(!vm);
+      } catch (e) { console.error('[gimmick-filter] application', e); done(true); }
+    }).catch(function (e) {
+      if (stopped) return;
+      console.error('[gimmick-filter] ' + channel, e);
+      done(true);
+    });
   }
   function check() {
     try {
@@ -162,10 +189,11 @@ const WATCH_SCRIPT = `(function () { try {
         var ul = document.querySelector(ctx.list);
         if (!modal || !ul) return;
         found = true;
-        if (!visible(modal)) { lastSignature[ctx.id] = null; return; }
+        if (!visible(modal)) { lastSignature[ctx.id] = null; inactive[ctx.id] = false; return; }
+        if (inflight[ctx.id]) return;
         ensureIndex(ul);
         var sig = signature(snapshot(ul));
-        if (sig === lastSignature[ctx.id] && modal.querySelector('.gf-panel')) return;
+        if (sig === lastSignature[ctx.id] && (modal.querySelector('.gf-panel') || inactive[ctx.id])) return;
         lastSignature[ctx.id] = sig;
         request(ctx, ul, 'list-open');
       });
@@ -226,6 +254,7 @@ const WATCH_SCRIPT = `(function () { try {
   document.addEventListener('change', onChange, true);
   document.addEventListener('keydown', onKeyDown, true);
   function stop() {
+    stopped = true;
     observer.disconnect();
     document.removeEventListener('click', onClick, true);
     document.removeEventListener('change', onChange, true);
