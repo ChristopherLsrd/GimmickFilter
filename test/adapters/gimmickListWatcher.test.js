@@ -107,7 +107,7 @@ test('toViewModel renvoie null pour un résultat null', () => {
 test('le script se protège des boucles, courses et réponses tardives', () => {
   assert.ok(WATCH_SCRIPT.includes("inactive[ctx.id]"));
   assert.ok(WATCH_SCRIPT.includes("inflight[ctx.id]"));
-  assert.match(WATCH_SCRIPT, /if (stopped) return;/);
+  assert.ok(WATCH_SCRIPT.includes("if (stopped) return;"));
   assert.ok(WATCH_SCRIPT.includes("lastSignature[ctx.id] = signature(sent)"));
   assert.match(WATCH_SCRIPT, /u2298/);
   assert.doesNotThrow(() => new Function(WATCH_SCRIPT));
