@@ -19,6 +19,7 @@ const CSS = `
 .gf-empty { padding: 8px; text-align: center; color: var(--color-2); }
 .gf-error { color: var(--alert); }
 .gf-muted { color: var(--color-2); }
+.gimmickSelect, .gimmickSelect > *, .gf-panel { overflow-anchor: none; }
 .gimmickSelect > li { position: relative; }
 .gimmickSelect > li.gf-hidden { display: none !important; }
 .gimmickSelect > li.gf-forced { outline: 1px dashed var(--color-2); }

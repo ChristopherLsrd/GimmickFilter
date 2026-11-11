@@ -87,11 +87,20 @@ const WATCH_SCRIPT = `(function () { try {
       toastTimer = null;
     }, 5000);
   }
+  function scrollerOf(el) {
+    for (var node = el; node && node !== document.body; node = node.parentElement) {
+      var oy = getComputedStyle(node).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight) return node;
+    }
+    return null;
+  }
   function apply(ctx, ul, vm) {
     if (!vm) { restore(ctx); return; }
     var modal = document.querySelector(ctx.modal);
     var anchor = document.querySelector(ctx.anchor);
     if (!modal || !anchor) return;
+    var scroller = scrollerOf(ul);
+    var scrollTop = scroller ? scroller.scrollTop : 0;
     var wrap = document.createElement('div');
     wrap.innerHTML = vm.panelHtml;
     var panel = wrap.firstElementChild;
@@ -140,6 +149,8 @@ const WATCH_SCRIPT = `(function () { try {
       decorate(li, name, vm.labels, vm.list.pinned.indexOf(name) >= 0, vm.list.forced.indexOf(name) >= 0);
     });
     showToast(panel, vm.toastHtml);
+    // Déplacer les cartes ne doit pas faire défiler la liste (ancrage de défilement du navigateur).
+    if (scroller && scroller.scrollTop !== scrollTop) scroller.scrollTop = scrollTop;
   }
   function restore(ctx) {
     var modal = document.querySelector(ctx.modal);

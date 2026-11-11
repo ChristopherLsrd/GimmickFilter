@@ -119,3 +119,11 @@ test("WATCH_SCRIPT rend la liste native après une erreur d'invocation ou d'appl
   assert.match(WATCH_SCRIPT, /channel, e\);\s*safeRestore\(ctx\);\s*done\(true\);/);
   assert.doesNotThrow(() => new Function(WATCH_SCRIPT));
 });
+
+test('le réordonnancement conserve la position de défilement de la liste', () => {
+  assert.match(WATCH_SCRIPT, /function scrollerOf\(/);
+  assert.match(WATCH_SCRIPT, /var scroller = scrollerOf\(ul\)/);
+  assert.match(WATCH_SCRIPT, /scroller\.scrollTop = scrollTop/);
+  assert.match(CSS, /\.gimmickSelect[^{]*\{[^}]*overflow-anchor: none/);
+  assert.doesNotThrow(() => new Function(WATCH_SCRIPT));
+});
