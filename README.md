@@ -49,3 +49,9 @@ New-Item -ItemType Junction -Path "$env:APPDATA\ProWrestlingSimulator\plugins\gi
 - [ ] Désactiver le plugin : la liste du jeu revient à son état d'origine ; le réactiver.
 - [ ] Rechargement à chaud : pas de panneau en double.
 - [ ] Rouvrir la page Gimmick Filter après un rechargement à chaud affiche la liste (pas un indicateur de chargement figé).
+- [ ] Après un rechargement à chaud, l'entrée du menu latéral et la page Gimmick Filter existent toujours et fonctionnent.
+- [ ] Modifier des épingles ou masquages sur la page, puis fermer et rouvrir la fenêtre Changer de gimmick pour le même catcheur : la liste reflète le changement.
+- [ ] La recherche texte du jeu combinée avec des cartes épinglées et le séparateur.
+- [ ] Changer la langue du jeu pendant qu'une fenêtre est ouverte.
+- [ ] Le jeu régénère les cartes pendant que la fenêtre est ouverte (par exemple en changeant de catcheur) : le filtre est réappliqué.
+- [ ] Après un rechargement du moteur de rendu (Ctrl+R si disponible), le panneau revient (vérifie onRendererLoad).
