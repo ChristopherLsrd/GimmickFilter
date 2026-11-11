@@ -108,6 +108,12 @@ const WATCH_SCRIPT = `(function () { try {
     var oldInput = old ? old.querySelector('.gf-preset-name') : null;
     var kept = null;
     if (oldInput) kept = { value: oldInput.value, start: oldInput.selectionStart, end: oldInput.selectionEnd, focused: document.activeElement === oldInput };
+    var open = (old && old.classList.contains('gf-open')) || !!panel.querySelector('.gf-save');
+    if (open) {
+      panel.classList.add('gf-open');
+      var tg = panel.querySelector('[data-gf-toggle]');
+      if (tg) tg.setAttribute('aria-expanded', 'true');
+    }
     if (old) old.replaceWith(panel); else anchor.parentNode.insertBefore(panel, anchor);
     var input = panel.querySelector('.gf-preset-name');
     if (input) {
@@ -228,6 +234,17 @@ const WATCH_SCRIPT = `(function () { try {
   }
   function onClick(ev) {
     try {
+      var toggle = ev.target && ev.target.closest ? ev.target.closest('[data-gf-toggle]') : null;
+      if (toggle && contextOf(toggle)) {
+        var box = toggle.closest('.gf-panel');
+        if (box) {
+          var isOpen = box.classList.toggle('gf-open');
+          toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+        ev.preventDefault();
+        ev.stopPropagation();
+        return;
+      }
       var target = ev.target && ev.target.closest ? ev.target.closest('[data-gf-action]') : null;
       if (!target) return;
       var ctx = contextOf(target);

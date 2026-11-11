@@ -2,7 +2,12 @@
 
 // Styles injectés dans le jeu. Toujours les variables du thème (guide UI de PWS).
 const CSS = `
-.gf-panel { background: var(--modal-panel, var(--background-2)); border: var(--panel-border); border-radius: var(--panel-radius); padding: 8px 10px; margin: 0 0 8px; display: flex; flex-direction: column; gap: 6px; color: var(--modal-text, var(--color-0)); }
+.gf-panel { position: sticky; top: 0; z-index: 3; background: var(--modal-background, var(--background-1)); border: var(--panel-border); border-radius: var(--panel-radius); padding: 8px 10px; margin: 0 0 8px; display: flex; flex-direction: column; gap: 6px; color: var(--modal-text, var(--color-0)); }
+.gf-panel:not(.gf-open) .gf-body { display: none; }
+.gf-body { display: flex; flex-direction: column; gap: 6px; max-height: 45vh; overflow-y: auto; }
+.gf-toggle::after { content: ' \\25BE'; }
+.gf-panel.gf-open .gf-toggle::after { content: ' \\25B4'; }
+.gf-bar .gf-count { margin-left: auto; }
 .gf-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .gf-label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-2); min-width: 110px; }
 .gf-btn { margin: 0; width: auto; }

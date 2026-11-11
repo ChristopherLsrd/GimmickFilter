@@ -6,6 +6,7 @@
 const en = Object.freeze({
   'panel.preset': 'Filter',
   'panel.presetNone': '— None —',
+  'panel.filters': 'Filters',
   'panel.save': 'Save',
   'panel.delete': 'Delete',
   'panel.reset': 'Reset',
@@ -62,6 +63,7 @@ const en = Object.freeze({
 const fr = Object.freeze({
   'panel.preset': 'Filtre',
   'panel.presetNone': '— Aucun —',
+  'panel.filters': 'Filtres',
   'panel.save': 'Enregistrer',
   'panel.delete': 'Supprimer',
   'panel.reset': 'Réinitialiser',
@@ -118,6 +120,7 @@ const fr = Object.freeze({
 const de = Object.freeze({
   'panel.preset': 'Filter',
   'panel.presetNone': '— Keiner —',
+  'panel.filters': 'Filter',
   'panel.save': 'Speichern',
   'panel.delete': 'Löschen',
   'panel.reset': 'Zurücksetzen',
@@ -174,6 +177,7 @@ const de = Object.freeze({
 const es = Object.freeze({
   'panel.preset': 'Filtro',
   'panel.presetNone': '— Ninguno —',
+  'panel.filters': 'Filtros',
   'panel.save': 'Guardar',
   'panel.delete': 'Eliminar',
   'panel.reset': 'Restablecer',
@@ -230,6 +234,7 @@ const es = Object.freeze({
 const it = Object.freeze({
   'panel.preset': 'Filtro',
   'panel.presetNone': '— Nessuno —',
+  'panel.filters': 'Filtri',
   'panel.save': 'Salva',
   'panel.delete': 'Elimina',
   'panel.reset': 'Reimposta',
@@ -286,6 +291,7 @@ const it = Object.freeze({
 const pt = Object.freeze({
   'panel.preset': 'Filtro',
   'panel.presetNone': '— Nenhum —',
+  'panel.filters': 'Filtros',
   'panel.save': 'Salvar',
   'panel.delete': 'Excluir',
   'panel.reset': 'Redefinir',

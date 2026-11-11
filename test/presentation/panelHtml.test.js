@@ -110,3 +110,44 @@ test('les boutons d\'action utilisent les classes natives du jeu', () => {
   assert.match(html, /class="gf-btn button clickable secondaryButton"[^>]*data-gf-action="reset"/);
   assert.match(html, /class="gf-btn button disabled"[^>]*data-gf-action="deletePreset" disabled/);
 });
+
+test('barre fixe puis corps : le sélecteur et le bouton sont dans la barre, les puces dans le corps', () => {
+  const html = renderPanel(base());
+  const bar = html.indexOf('<div class="gf-row gf-bar">');
+  const body = html.indexOf('<div class="gf-body">');
+  assert.ok(bar > 0 && body > bar);
+  const barHtml = html.slice(bar, body);
+  assert.match(barHtml, /<select class="gf-select" data-gf-change="applyPreset">/);
+  assert.match(barHtml, /<button type="button" class="gf-btn gf-toggle button clickable secondaryButton" data-gf-toggle aria-expanded="false">Filtres<\/button>/);
+  assert.match(barHtml, /class="gf-count"/);
+  const bodyHtml = html.slice(body);
+  assert.match(bodyHtml, /class="gf-row gf-chips"/);
+  assert.match(bodyHtml, /data-gf-action="openSave"/);
+  assert.match(bodyHtml, /data-gf-action="setDisposition"/);
+  assert.doesNotMatch(barHtml, /gf-chips|setDisposition/);
+});
+
+test('le libellé du bouton compte les filtres actifs', () => {
+  const some = renderPanel(base({ criteria: { ...defaultCriteria(), disposition: 'Heel', match: 'match', include: ['Talking Angle Boost'] } }));
+  assert.match(some, /data-gf-toggle aria-expanded="false">Filtres \(3\)<\/button>/);
+  assert.match(renderPanel(base()), /data-gf-toggle aria-expanded="false">Filtres<\/button>/);
+});
+
+test('le résumé n\'existe qu\'avec des filtres et porte une puce retirable par filtre', () => {
+  assert.doesNotMatch(renderPanel(base()), /gf-summary/);
+  const html = renderPanel(base({ criteria: { ...defaultCriteria(), disposition: 'Heel', match: 'match', include: ['Talking Angle Boost'], exclude: ['Capped Popularity'] } }));
+  const summary = html.slice(html.indexOf('gf-summary'), html.indexOf('<div class="gf-body">'));
+  assert.match(summary, /class="gf-chip gf-inc" data-gf-action="setDisposition" data-gf-arg="all">Heel ×</);
+  assert.match(summary, /class="gf-chip gf-inc" data-gf-action="setMatch" data-gf-arg="all">✓ Pertinentes ×|data-gf-action="setMatch" data-gf-arg="all">[^<]* ×</);
+  assert.match(summary, /class="gf-chip gf-inc" data-gf-action="toggleInclude" data-gf-arg="Talking Angle Boost">Talking Angle Boost ×</);
+  assert.match(summary, /class="gf-chip gf-exc" data-gf-action="toggleExclude" data-gf-arg="Capped Popularity">Capped Popularity ×</);
+  assert.equal(summary.split('<button').length - 1, 4);
+});
+
+test('le bloc liste vide reste hors du corps repliable', () => {
+  const html = renderPanel(base({ counts: { shown: 0, pinnedFiltered: 0, hiddenBySetting: 0 } }));
+  assert.ok(html.indexOf('gf-empty') > html.indexOf('<div class="gf-body">'));
+  const bodyEnd = html.indexOf('<div class="gf-empty">');
+  const body = html.slice(html.indexOf('<div class="gf-body">'), bodyEnd);
+  assert.match(body, /<\/div>$/);
+});

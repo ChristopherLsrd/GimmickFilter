@@ -127,3 +127,19 @@ test('le réordonnancement conserve la position de défilement de la liste', () 
   assert.match(CSS, /\.gimmickSelect[^{]*\{[^}]*overflow-anchor: none/);
   assert.doesNotThrow(() => new Function(WATCH_SCRIPT));
 });
+
+test('le bouton Filtres déplie le panneau sans requête et le repli est conservé', () => {
+  assert.match(WATCH_SCRIPT, /closest\('\[data-gf-toggle\]'\)/);
+  assert.match(WATCH_SCRIPT, /classList\.toggle\('gf-open'\)/);
+  assert.match(WATCH_SCRIPT, /setAttribute\('aria-expanded'/);
+  assert.match(WATCH_SCRIPT, /old\.classList\.contains\('gf-open'\)/);
+  assert.match(WATCH_SCRIPT, /panel\.querySelector\('\.gf-save'\)/);
+  assert.match(WATCH_SCRIPT, /classList\.add\('gf-open'\)/);
+  assert.doesNotThrow(() => new Function(WATCH_SCRIPT));
+});
+
+test('le panneau est collant et son corps se replie', () => {
+  assert.match(CSS, /\.gf-panel \{[^}]*position: sticky/);
+  assert.match(CSS, /\.gf-panel:not\(\.gf-open\) \.gf-body \{ display: none; \}/);
+  assert.match(CSS, /\.gf-body \{[^}]*max-height: 45vh/);
+});

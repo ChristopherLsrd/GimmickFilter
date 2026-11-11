@@ -20,20 +20,47 @@ function label(locale, key) {
   return `<span class="gf-label">${escapeHtml(t(locale, key))}</span>`;
 }
 
-function presetRow(panel, locale) {
+function activeCount(criteria) {
+  return (criteria.disposition !== 'all' ? 1 : 0) + (criteria.match !== 'all' ? 1 : 0)
+    + criteria.include.length + criteria.exclude.length;
+}
+
+function barRow(panel, locale, n) {
   const options = [`<option value="">${escapeHtml(t(locale, 'panel.presetNone'))}</option>`]
     .concat(panel.presets.map((name) => {
       const selected = name === panel.activePreset;
       const text = selected && panel.dirty ? `${name}*` : name;
       return `<option value="${escapeHtml(name)}"${selected ? ' selected' : ''}>${escapeHtml(text)}</option>`;
     }));
-  return '<div class="gf-row gf-presets">'
+  const toggleLabel = t(locale, 'panel.filters') + (n > 0 ? ` (${n})` : '');
+  return '<div class="gf-row gf-bar">'
     + label(locale, 'panel.preset')
     + `<select class="gf-select" data-gf-change="applyPreset">${options.join('')}</select>`
+    + `<button type="button" class="gf-btn gf-toggle button clickable secondaryButton" data-gf-toggle aria-expanded="false">${escapeHtml(toggleLabel)}</button>`
+    + countLine(panel.counts, locale)
+    + '</div>';
+}
+
+function actionsRow(panel, locale) {
+  return '<div class="gf-row gf-presets">'
     + button({ action: 'openSave', label: t(locale, 'panel.save') })
     + button({ action: 'deletePreset', label: t(locale, 'panel.delete'), disabled: !panel.activePreset })
     + button({ action: 'reset', label: t(locale, 'panel.reset') })
     + '</div>';
+}
+
+function summaryRow(criteria, locale, n) {
+  if (n === 0) return '';
+  const chips = [];
+  if (criteria.disposition !== 'all') {
+    chips.push(button({ action: 'setDisposition', arg: 'all', label: `${t(locale, `disposition.${criteria.disposition}`)} ×`, cls: 'gf-chip gf-inc' }));
+  }
+  if (criteria.match !== 'all') {
+    chips.push(button({ action: 'setMatch', arg: 'all', label: `${t(locale, `match.${criteria.match}`)} ×`, cls: 'gf-chip gf-inc' }));
+  }
+  criteria.include.forEach((effect) => chips.push(button({ action: 'toggleInclude', arg: effect, label: `${effect} ×`, cls: 'gf-chip gf-inc' })));
+  criteria.exclude.forEach((effect) => chips.push(button({ action: 'toggleExclude', arg: effect, label: `${effect} ×`, cls: 'gf-chip gf-exc' })));
+  return `<div class="gf-row gf-summary">${chips.join('')}</div>`;
 }
 
 function saveRow(form, locale) {
@@ -95,8 +122,12 @@ function emptyBlock(counts, locale) {
 function renderPanel(panel) {
   const locale = panel.locale;
   const { criteria } = panel;
+  const n = activeCount(criteria);
   return `<div class="gf-panel" data-plugin-id="${PLUGIN_ID}" lang="${resolveLocale(locale)}">`
-    + presetRow(panel, locale)
+    + barRow(panel, locale, n)
+    + summaryRow(criteria, locale, n)
+    + '<div class="gf-body">'
+    + actionsRow(panel, locale)
     + saveRow(panel.saveForm, locale)
     + '<div class="gf-row">'
     + segmented(locale, 'panel.disposition', 'setDisposition', DISPOSITIONS, criteria.disposition, 'disposition')
@@ -104,7 +135,7 @@ function renderPanel(panel) {
     + '</div>'
     + chipRow(locale, 'panel.include', 'toggleInclude', panel.effects, criteria.include, criteria.exclude, 'gf-inc')
     + chipRow(locale, 'panel.exclude', 'toggleExclude', panel.effects, criteria.exclude, criteria.include, 'gf-exc')
-    + countLine(panel.counts, locale)
+    + '</div>'
     + emptyBlock(panel.counts, locale)
     + '</div>';
 }
