@@ -1,0 +1,9 @@
+{
+  "id": "gimmick-filter",
+  "name": "Gimmick Filter",
+  "version": "0.1.0",
+  "description": "Filter, pin and hide gimmicks in the Change Gimmick and contract negotiation lists.",
+  "author": "",
+  "main": "index.js",
+  "permissions": ["database"]
+}
