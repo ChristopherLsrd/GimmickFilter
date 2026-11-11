@@ -91,19 +91,29 @@ function segmented(locale, labelKey, action, values, current, prefix) {
   return `${label(locale, labelKey)}<span class="gf-seg" role="group">${buttons.join('')}</span>`;
 }
 
-function chipRow(locale, labelKey, action, effects, active, blocked, activeClass) {
-  const chips = effects.map((effect) => {
+const VISIBLE_EFFECTS = 5;
+
+// Effets triés par ordre alphabétique ; au repos, seuls les 5 premiers (et les effets actifs) sont visibles.
+function chipRow(locale, labelKey, action, effects, active, blocked, activeClass, row) {
+  const sorted = [...effects].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+  const chips = sorted.map((effect, index) => {
     const on = active.includes(effect);
+    const extra = index >= VISIBLE_EFFECTS && !on;
     return button({
       action,
       arg: effect,
       label: effect,
-      cls: `gf-chip${on ? ` ${activeClass}` : ''}`,
+      cls: `gf-chip${on ? ` ${activeClass}` : ''}${extra ? ' gf-extra' : ''}`,
       on,
       disabled: blocked.includes(effect),
     });
   });
-  return `<div class="gf-row gf-chips">${label(locale, labelKey)}${chips.join('')}</div>`;
+  const more = sorted.length > VISIBLE_EFFECTS
+    ? '<button type="button" class="gf-btn gf-more button clickable secondaryButton" data-gf-more>'
+      + `<span class="gf-more-label">${escapeHtml(t(locale, 'panel.showMore'))}</span>`
+      + `<span class="gf-less-label">${escapeHtml(t(locale, 'panel.showLess'))}</span></button>`
+    : '';
+  return `<div class="gf-row gf-chips" data-gf-row="${row}">${label(locale, labelKey)}${chips.join('')}${more}</div>`;
 }
 
 function countLine(counts, locale) {
@@ -133,8 +143,8 @@ function renderPanel(panel) {
     + segmented(locale, 'panel.disposition', 'setDisposition', DISPOSITIONS, criteria.disposition, 'disposition')
     + segmented(locale, 'panel.match', 'setMatch', MATCH_MODES, criteria.match, 'match')
     + '</div>'
-    + chipRow(locale, 'panel.include', 'toggleInclude', panel.effects, criteria.include, criteria.exclude, 'gf-inc')
-    + chipRow(locale, 'panel.exclude', 'toggleExclude', panel.effects, criteria.exclude, criteria.include, 'gf-exc')
+    + chipRow(locale, 'panel.include', 'toggleInclude', panel.effects, criteria.include, criteria.exclude, 'gf-inc', 'include')
+    + chipRow(locale, 'panel.exclude', 'toggleExclude', panel.effects, criteria.exclude, criteria.include, 'gf-exc', 'exclude')
     + '</div>'
     + emptyBlock(panel.counts, locale)
     + '</div>';

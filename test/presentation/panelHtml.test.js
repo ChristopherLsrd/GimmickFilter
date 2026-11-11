@@ -151,3 +151,33 @@ test('le bloc liste vide reste hors du corps repliable', () => {
   const body = html.slice(html.indexOf('<div class="gf-body">'), bodyEnd);
   assert.match(body, /<\/div>$/);
 });
+
+const MANY = ['Video Angle Boost', 'Added Cost', 'Match Boost', 'Fast Fan Loss', 'Capped Popularity', 'Talking Angle Boost', 'Attack Angle Boost'];
+
+function chipRowHtml(html, row) {
+  const start = html.indexOf(`data-gf-row="${row}"`);
+  assert.ok(start >= 0, `rangée ${row} absente`);
+  return html.slice(start, html.indexOf('</div>', start));
+}
+
+test('les effets sont triés par ordre alphabétique, seuls les 5 premiers visibles au repos', () => {
+  const row = chipRowHtml(renderPanel(base({ effects: MANY })), 'include');
+  const order = [...row.matchAll(/data-gf-arg="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(order, ['Added Cost', 'Attack Angle Boost', 'Capped Popularity', 'Fast Fan Loss', 'Match Boost', 'Talking Angle Boost', 'Video Angle Boost']);
+  const extras = [...row.matchAll(/class="gf-chip gf-extra"[^>]*data-gf-arg="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(extras, ['Talking Angle Boost', 'Video Angle Boost']);
+  assert.match(row, /data-gf-more[^>]*>.*Voir plus.*Voir moins/);
+});
+
+test('un effet actif au-delà des 5 premiers reste visible', () => {
+  const html = renderPanel(base({ effects: MANY, criteria: { ...defaultCriteria(), exclude: ['Video Angle Boost'] } }));
+  const row = chipRowHtml(html, 'exclude');
+  assert.doesNotMatch(row, /gf-extra[^>]*data-gf-arg="Video Angle Boost"/);
+  assert.match(row, /data-gf-arg="Talking Angle Boost"/);
+});
+
+test('pas de bouton voir plus avec 5 effets ou moins', () => {
+  const row = chipRowHtml(renderPanel(base()), 'include');
+  assert.doesNotMatch(row, /data-gf-more/);
+  assert.doesNotMatch(row, /gf-extra/);
+});

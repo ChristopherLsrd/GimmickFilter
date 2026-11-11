@@ -143,3 +143,10 @@ test('le panneau est collant et son corps se replie', () => {
   assert.match(CSS, /\.gf-panel:not\(\.gf-open\) \.gf-body \{ display: none; \}/);
   assert.match(CSS, /\.gf-body \{[^}]*max-height: 45vh/);
 });
+
+test('voir plus / voir moins se replie côté renderer et survit au re-rendu', () => {
+  assert.match(WATCH_SCRIPT, /closest\('\[data-gf-more\]'\)/);
+  assert.match(WATCH_SCRIPT, /gf-expanded/);
+  assert.match(CSS, /\.gf-chips:not\(\.gf-expanded\) \.gf-extra \{ display: none; \}/);
+  assert.doesNotThrow(() => new Function(WATCH_SCRIPT));
+});

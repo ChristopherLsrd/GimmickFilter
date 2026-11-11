@@ -108,6 +108,12 @@ const WATCH_SCRIPT = `(function () { try {
     var oldInput = old ? old.querySelector('.gf-preset-name') : null;
     var kept = null;
     if (oldInput) kept = { value: oldInput.value, start: oldInput.selectionStart, end: oldInput.selectionEnd, focused: document.activeElement === oldInput };
+    if (old) {
+      old.querySelectorAll('.gf-chips.gf-expanded').forEach(function (r) {
+        var same = panel.querySelector('.gf-chips[data-gf-row="' + r.getAttribute('data-gf-row') + '"]');
+        if (same) same.classList.add('gf-expanded');
+      });
+    }
     var open = (old && old.classList.contains('gf-open')) || !!panel.querySelector('.gf-save');
     if (open) {
       panel.classList.add('gf-open');
@@ -234,6 +240,14 @@ const WATCH_SCRIPT = `(function () { try {
   }
   function onClick(ev) {
     try {
+      var more = ev.target && ev.target.closest ? ev.target.closest('[data-gf-more]') : null;
+      if (more && contextOf(more)) {
+        var chipRow = more.closest('.gf-chips');
+        if (chipRow) chipRow.classList.toggle('gf-expanded');
+        ev.preventDefault();
+        ev.stopPropagation();
+        return;
+      }
       var toggle = ev.target && ev.target.closest ? ev.target.closest('[data-gf-toggle]') : null;
       if (toggle && contextOf(toggle)) {
         var box = toggle.closest('.gf-panel');

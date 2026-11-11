@@ -19,6 +19,9 @@ const CSS = `
 .gf-chip { border: var(--panel-border); border-radius: 999px; padding: 2px 9px; margin: 0; background: transparent; color: inherit; cursor: pointer; font-size: 11px; }
 .gf-chip.gf-inc { background: color-mix(in srgb, var(--positive-effect) 25%, transparent); border-color: var(--positive-effect); }
 .gf-chip.gf-exc { background: color-mix(in srgb, var(--negative-effect) 25%, transparent); border-color: var(--negative-effect); text-decoration: line-through; }
+.gf-chips:not(.gf-expanded) .gf-extra { display: none; }
+.gf-more { font-size: 11px; }
+.gf-chips:not(.gf-expanded) .gf-less-label, .gf-chips.gf-expanded .gf-more-label { display: none; }
 .gf-chip:disabled { opacity: .35; cursor: default; }
 .gf-count { font-size: 11px; color: var(--color-2); }
 .gf-empty { padding: 8px; text-align: center; color: var(--color-2); }
